@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysProductConfigGroupMapper">
+    
+    <resultMap type="SysProductConfigGroup" id="ConfigGroupResult">
+        <id property="configGroupId" column="config_group_id"/>
+        <result property="productId" column="product_id"/>
+        <result property="groupName" column="group_name"/>
+        <result property="groupType" column="group_type"/>
+        <result property="isRequired" column="is_required"/>
+        <result property="isMultiple" column="is_multiple"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="selectConfigGroupById" parameterType="Long" resultMap="ConfigGroupResult">
+        select config_group_id, product_id, group_name, group_type, is_required, is_multiple, sort_order, create_time, update_time
+        from sys_product_config_group
+        where config_group_id = #{configGroupId}
+    </select>
+
+    <select id="selectConfigGroupsByProductId" parameterType="Long" resultMap="ConfigGroupResult">
+        select config_group_id, product_id, group_name, group_type, is_required, is_multiple, sort_order, create_time, update_time
+        from sys_product_config_group
+        where product_id = #{productId}
+        order by sort_order
+    </select>
+
+    <insert id="insertConfigGroup" parameterType="SysProductConfigGroup" useGeneratedKeys="true" keyProperty="configGroupId">
+        insert into sys_product_config_group (product_id, group_name, group_type, is_required, is_multiple, sort_order, create_time, update_time)
+        values (#{productId}, #{groupName}, #{groupType}, #{isRequired}, #{isMultiple}, #{sortOrder}, sysdate(), sysdate())
+    </insert>
+
+    <update id="updateConfigGroup" parameterType="SysProductConfigGroup">
+        update sys_product_config_group
+        <set>
+            <if test="groupName != null">group_name = #{groupName},</if>
+            <if test="groupType != null">group_type = #{groupType},</if>
+            <if test="isRequired != null">is_required = #{isRequired},</if>
+            <if test="isMultiple != null">is_multiple = #{isMultiple},</if>
+            <if test="sortOrder != null">sort_order = #{sortOrder},</if>
+            update_time = sysdate()
+        </set>
+        where config_group_id = #{configGroupId}
+    </update>
+
+    <delete id="deleteConfigGroupById" parameterType="Long">
+        delete from sys_product_config_group where config_group_id = #{configGroupId}
+    </delete>
+
+    <delete id="deleteConfigGroupsByProductId" parameterType="Long">
+        delete from sys_product_config_group where product_id = #{productId}
+    </delete>
+</mapper>

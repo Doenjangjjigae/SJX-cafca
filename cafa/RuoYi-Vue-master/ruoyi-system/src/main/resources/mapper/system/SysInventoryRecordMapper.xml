@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysInventoryRecordMapper">
+    <resultMap type="com.ruoyi.system.domain.SysInventoryRecord" id="SysInventoryRecordResult">
+        <id property="recordId" column="record_id"/>
+        <result property="materialId" column="material_id"/>
+        <result property="materialName" column="material_name"/>
+        <result property="operationType" column="operation_type"/>
+        <result property="quantity" column="quantity"/>
+        <result property="beforeStock" column="before_stock"/>
+        <result property="afterStock" column="after_stock"/>
+        <result property="operator" column="operator"/>
+        <result property="operationTime" column="operation_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectSysInventoryRecordVo">
+        select r.record_id, r.material_id, m.material_name, r.operation_type, r.quantity, r.before_stock, r.after_stock, r.operator, r.operation_time, r.remark 
+        from sys_inventory_record r
+        left join sys_material m on r.material_id = m.material_id
+    </sql>
+
+    <select id="selectSysInventoryRecordById" parameterType="Long" resultMap="SysInventoryRecordResult">
+        <include refid="selectSysInventoryRecordVo"/>
+        where r.record_id = #{recordId}
+    </select>
+
+    <select id="selectSysInventoryRecordList" parameterType="com.ruoyi.system.domain.SysInventoryRecord" resultMap="SysInventoryRecordResult">
+        <include refid="selectSysInventoryRecordVo"/>
+        <where>
+            <if test="materialId != null">
+                and r.material_id = #{materialId}
+            </if>
+            <if test="materialName != null and materialName != ''">
+                and m.material_name like concat('%', #{materialName}, '%')
+            </if>
+            <if test="operationType != null and operationType != ''">
+                and r.operation_type = #{operationType}
+            </if>
+            <if test="operator != null and operator != ''">
+                and r.operator = #{operator}
+            </if>
+        </where>
+        order by r.operation_time desc
+    </select>
+
+    <insert id="insertSysInventoryRecord" parameterType="com.ruoyi.system.domain.SysInventoryRecord" useGeneratedKeys="true" keyProperty="recordId">
+        insert into sys_inventory_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="materialId != null">material_id,</if>
+            <if test="operationType != null">operation_type,</if>
+            <if test="quantity != null">quantity,</if>
+            <if test="beforeStock != null">before_stock,</if>
+            <if test="afterStock != null">after_stock,</if>
+            <if test="operator != null">operator,</if>
+            <if test="operationTime != null">operation_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="materialId != null">#{materialId},</if>
+            <if test="operationType != null">#{operationType},</if>
+            <if test="quantity != null">#{quantity},</if>
+            <if test="beforeStock != null">#{beforeStock},</if>
+            <if test="afterStock != null">#{afterStock},</if>
+            <if test="operator != null">#{operator},</if>
+            <if test="operationTime != null">#{operationTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSysInventoryRecord" parameterType="com.ruoyi.system.domain.SysInventoryRecord">
+        update sys_inventory_record
+        <set>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="operationType != null">operation_type = #{operationType},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="beforeStock != null">before_stock = #{beforeStock},</if>
+            <if test="afterStock != null">after_stock = #{afterStock},</if>
+            <if test="operator != null">operator = #{operator},</if>
+            <if test="operationTime != null">operation_time = #{operationTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        where record_id = #{recordId}
+    </update>
+
+    <delete id="deleteSysInventoryRecordById" parameterType="Long">
+        delete from sys_inventory_record where record_id = #{recordId}
+    </delete>
+
+    <delete id="deleteSysInventoryRecordByIds" parameterType="Long[]">
+        delete from sys_inventory_record where record_id in 
+        <foreach item="recordId" collection="array" open="(" separator="," close=")">
+            #{recordId}
+        </foreach>
+    </delete>
+</mapper>

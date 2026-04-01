@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysTableMapper">
+    <resultMap type="SysTable" id="SysTableResult">
+        <id property="tableId" column="table_id"/>
+        <result property="tableName" column="table_name"/>
+        <result property="tableNumber" column="table_number"/>
+        <result property="capacity" column="capacity"/>
+        <result property="status" column="status"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    
+    <sql id="selectTableVo">
+        select table_id, table_name, table_number, capacity, status, remark, create_by, create_time, update_by, update_time 
+        from sys_table
+    </sql>
+    
+    <select id="selectTableList" parameterType="SysTable" resultMap="SysTableResult">
+        <include refid="selectTableVo"/>
+        <where>
+            <if test="tableName != null and tableName != ''">
+                AND table_name like concat('%', #{tableName}, '%')
+            </if>
+            <if test="tableNumber != null and tableNumber != ''">
+                AND table_number like concat('%', #{tableNumber}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectTableById" parameterType="Long" resultMap="SysTableResult">
+        <include refid="selectTableVo"/>
+        where table_id = #{tableId}
+    </select>
+    
+    <insert id="insertTable" parameterType="SysTable" useGeneratedKeys="true" keyProperty="tableId">
+        insert into sys_table
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="tableName != null">table_name,</if>
+            <if test="tableNumber != null">table_number,</if>
+            <if test="capacity != null">capacity,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="tableName != null">#{tableName},</if>
+            <if test="tableNumber != null">#{tableNumber},</if>
+            <if test="capacity != null">#{capacity},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+    
+    <update id="updateTable" parameterType="SysTable">
+        update sys_table
+        <set>
+            <if test="tableName != null">table_name = #{tableName},</if>
+            <if test="tableNumber != null">table_number = #{tableNumber},</if>
+            <if test="capacity != null">capacity = #{capacity},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        where table_id = #{tableId}
+    </update>
+    
+    <delete id="deleteTableByIds" parameterType="Long[]">
+        delete from sys_table where table_id in
+        <foreach item="tableId" collection="array" open="(" separator="," close=")">
+            #{tableId}
+        </foreach>
+    </delete>
+    
+    <select id="selectTableByTableName" parameterType="String" resultMap="SysTableResult">
+        <include refid="selectTableVo"/>
+        where table_name = #{tableName}
+    </select>
+    
+    <select id="selectTableByTableNumber" parameterType="String" resultMap="SysTableResult">
+        <include refid="selectTableVo"/>
+        where table_number = #{tableNumber}
+    </select>
+</mapper>

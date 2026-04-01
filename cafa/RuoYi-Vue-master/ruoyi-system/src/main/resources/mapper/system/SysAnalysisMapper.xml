@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysAnalysisMapper">
+
+    <!-- 销售额统计 -->
+    <select id="getSalesAnalysis" resultType="map">
+        SELECT
+            CASE #{type}
+                WHEN 'day' THEN DATE_FORMAT(create_time, '%Y-%m-%d')
+                WHEN 'week' THEN CONCAT(YEARWEEK(create_time), '周')
+                WHEN 'month' THEN DATE_FORMAT(create_time, '%Y-%m')
+            END AS time,
+            SUM(actual_amount) AS sales
+        FROM sys_order
+        WHERE status IN ('1', '2')
+          AND create_time BETWEEN #{beginTime} AND #{endTime}
+        GROUP BY time
+        ORDER BY time
+    </select>
+
+    <!-- 订单数量分析 -->
+    <select id="getOrderAnalysis" resultType="map">
+        SELECT
+            CASE #{type}
+                WHEN 'day' THEN DATE_FORMAT(create_time, '%Y-%m-%d')
+                WHEN 'week' THEN CONCAT(YEARWEEK(create_time), '周')
+                WHEN 'month' THEN DATE_FORMAT(create_time, '%Y-%m')
+            END AS time,
+            COUNT(*) AS orderCount
+        FROM sys_order
+        WHERE status IN ('1', '2')
+          AND create_time BETWEEN #{beginTime} AND #{endTime}
+        GROUP BY time
+        ORDER BY time
+    </select>
+
+    <!-- 畅销商品排行榜 -->
+    <select id="getTopProducts" resultType="map">
+        SELECT
+            productName,
+            SUM(salesVolume) AS salesVolume,
+            SUM(salesAmount) AS salesAmount
+        FROM (
+            SELECT
+                product_name AS productName,
+                SUM(quantity) AS salesVolume,
+                SUM(subtotal) AS salesAmount
+            FROM sys_order_item
+            WHERE create_time BETWEEN #{beginTime} AND #{endTime}
+            GROUP BY product_id, product_name
+            
+            UNION ALL
+            
+            SELECT
+                package_name AS productName,
+                SUM(quantity) AS salesVolume,
+                SUM(subtotal) AS salesAmount
+            FROM sys_order_package_item opi
+            INNER JOIN sys_order o ON opi.order_id = o.order_id
+            WHERE o.create_time BETWEEN #{beginTime} AND #{endTime}
+                AND o.status IN ('1', '2')
+            GROUP BY package_id, package_name
+        ) AS combined
+        GROUP BY productName
+        ORDER BY salesVolume DESC
+        LIMIT #{limit}
+    </select>
+
+</mapper>

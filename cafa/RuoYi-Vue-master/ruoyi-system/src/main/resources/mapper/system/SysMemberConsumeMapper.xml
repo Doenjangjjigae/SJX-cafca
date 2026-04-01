@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysMemberConsumeMapper">
+    <resultMap type="SysMemberConsume" id="SysMemberConsumeResult">
+        <id property="id" column="id" />
+        <result property="memberId" column="member_id" />
+        <result property="memberCode" column="member_code" />
+        <result property="orderId" column="order_id" />
+        <result property="orderNumber" column="order_number" />
+        <result property="amount" column="amount" />
+        <result property="points" column="points" />
+        <result property="status" column="status" />
+        <result property="remark" column="remark" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <sql id="selectSysMemberConsumeVo">
+        select id, member_id, member_code, order_id, order_number, amount, points, status, remark, create_by, create_time, update_by, update_time 
+        from sys_member_consume
+    </sql>
+
+    <select id="selectSysMemberConsumeById" parameterType="Long" resultMap="SysMemberConsumeResult">
+        <include refid="selectSysMemberConsumeVo" />
+        where id = #{id}
+    </select>
+
+    <select id="selectSysMemberConsumeByMemberId" parameterType="Long" resultMap="SysMemberConsumeResult">
+        <include refid="selectSysMemberConsumeVo" />
+        where member_id = #{memberId}
+        order by create_time desc
+    </select>
+
+    <select id="selectSysMemberConsumeList" parameterType="SysMemberConsume" resultMap="SysMemberConsumeResult">
+        <include refid="selectSysMemberConsumeVo" />
+        <where>
+            <if test="memberId != null">
+                AND member_id = #{memberId}
+            </if>
+            <if test="memberCode != null and memberCode != ''">
+                AND member_code = #{memberCode}
+            </if>
+            <if test="orderId != null">
+                AND order_id = #{orderId}
+            </if>
+            <if test="orderNumber != null and orderNumber != ''">
+                AND order_number like concat('%', #{orderNumber}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <insert id="insertSysMemberConsume" parameterType="SysMemberConsume" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_member_consume(member_id, member_code, order_id, order_number, amount, points, status, remark, create_by, create_time, update_by, update_time)
+        values(#{memberId}, #{memberCode}, #{orderId}, #{orderNumber}, #{amount}, #{points}, #{status}, #{remark}, #{createBy}, #{createTime}, #{updateBy}, #{updateTime})
+    </insert>
+
+    <update id="updateSysMemberConsume" parameterType="SysMemberConsume">
+        update sys_member_consume
+        <set>
+            <if test="orderId != null">
+                order_id = #{orderId},
+            </if>
+            <if test="orderNumber != null and orderNumber != ''">
+                order_number = #{orderNumber},
+            </if>
+            <if test="amount != null">
+                amount = #{amount},
+            </if>
+            <if test="points != null">
+                points = #{points},
+            </if>
+            <if test="status != null and status != ''">
+                status = #{status},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+            update_by = #{updateBy},
+            update_time = #{updateTime}
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysMemberConsumeById" parameterType="Long">
+        delete from sys_member_consume where id = #{id}
+    </delete>
+
+    <delete id="deleteSysMemberConsumeByIds" parameterType="Long[]">
+        delete from sys_member_consume where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

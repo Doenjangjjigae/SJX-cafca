@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysProductMaterialMapper">
+    <resultMap type="com.ruoyi.system.domain.SysProductMaterial" id="SysProductMaterialResult">
+        <id property="id" column="id"/>
+        <result property="productId" column="product_id"/>
+        <result property="materialId" column="material_id"/>
+        <result property="materialName" column="material_name"/>
+        <result property="quantity" column="quantity"/>
+        <result property="isAdjustable" column="is_adjustable"/>
+        <result property="optionName" column="option_name"/>
+        <result property="defaultOption" column="default_option"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectProductMaterialVo">
+        select pm.id, pm.product_id, pm.material_id, m.material_name, pm.quantity, pm.is_adjustable, pm.option_name, pm.default_option, pm.create_time, pm.update_time
+        from sys_product_material pm
+        left join sys_material m on pm.material_id = m.material_id
+    </sql>
+
+    <select id="selectProductMaterialByProductId" parameterType="Long" resultMap="SysProductMaterialResult">
+        <include refid="selectProductMaterialVo"/>
+        where pm.product_id = #{productId}
+        order by pm.id
+    </select>
+
+    <select id="selectProductMaterialById" parameterType="Long" resultMap="SysProductMaterialResult">
+        <include refid="selectProductMaterialVo"/>
+        where pm.id = #{id}
+    </select>
+
+    <insert id="insertProductMaterial" parameterType="com.ruoyi.system.domain.SysProductMaterial" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_product_material
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productId != null">product_id,</if>
+            <if test="materialId != null">material_id,</if>
+            <if test="quantity != null">quantity,</if>
+            <if test="isAdjustable != null">is_adjustable,</if>
+            <if test="optionName != null">option_name,</if>
+            <if test="defaultOption != null">default_option,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productId != null">#{productId},</if>
+            <if test="materialId != null">#{materialId},</if>
+            <if test="quantity != null">#{quantity},</if>
+            <if test="isAdjustable != null">#{isAdjustable},</if>
+            <if test="optionName != null">#{optionName},</if>
+            <if test="defaultOption != null">#{defaultOption},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateProductMaterial" parameterType="com.ruoyi.system.domain.SysProductMaterial">
+        update sys_product_material
+        <set>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="isAdjustable != null">is_adjustable = #{isAdjustable},</if>
+            <if test="optionName != null">option_name = #{optionName},</if>
+            <if test="defaultOption != null">default_option = #{defaultOption},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteProductMaterialById" parameterType="Long">
+        delete from sys_product_material where id = #{id}
+    </delete>
+
+    <delete id="deleteProductMaterialByProductId" parameterType="Long">
+        delete from sys_product_material where product_id = #{productId}
+    </delete>
+
+    <insert id="batchInsertProductMaterial" parameterType="java.util.List">
+        insert into sys_product_material (product_id, material_id, quantity, is_adjustable, option_name, default_option, create_time)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.productId}, #{item.materialId}, #{item.quantity}, #{item.isAdjustable}, #{item.optionName}, #{item.defaultOption}, now())
+        </foreach>
+    </insert>
+</mapper>

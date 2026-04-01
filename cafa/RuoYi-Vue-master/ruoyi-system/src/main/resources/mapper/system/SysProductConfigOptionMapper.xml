@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysProductConfigOptionMapper">
+    
+    <resultMap type="SysProductConfigOption" id="ConfigOptionResult">
+        <id property="configOptionId" column="config_option_id"/>
+        <result property="configGroupId" column="config_group_id"/>
+        <result property="optionName" column="option_name"/>
+        <result property="optionValue" column="option_value"/>
+        <result property="extraPrice" column="extra_price"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="isDefault" column="is_default"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <select id="selectConfigOptionById" parameterType="Long" resultMap="ConfigOptionResult">
+        select config_option_id, config_group_id, option_name, option_value, extra_price, sort_order, is_default, create_time
+        from sys_product_config_option
+        where config_option_id = #{configOptionId}
+    </select>
+
+    <select id="selectConfigOptionsByGroupId" parameterType="Long" resultMap="ConfigOptionResult">
+        select config_option_id, config_group_id, option_name, option_value, extra_price, sort_order, is_default, create_time
+        from sys_product_config_option
+        where config_group_id = #{configGroupId}
+        order by sort_order
+    </select>
+
+    <insert id="insertConfigOption" parameterType="SysProductConfigOption" useGeneratedKeys="true" keyProperty="configOptionId">
+        insert into sys_product_config_option (config_group_id, option_name, option_value, extra_price, sort_order, is_default, create_time)
+        values (#{configGroupId}, #{optionName}, #{optionValue}, #{extraPrice}, #{sortOrder}, #{isDefault}, sysdate())
+    </insert>
+
+    <update id="updateConfigOption" parameterType="SysProductConfigOption">
+        update sys_product_config_option
+        <set>
+            <if test="optionName != null">option_name = #{optionName},</if>
+            <if test="optionValue != null">option_value = #{optionValue},</if>
+            <if test="extraPrice != null">extra_price = #{extraPrice},</if>
+            <if test="sortOrder != null">sort_order = #{sortOrder},</if>
+            <if test="isDefault != null">is_default = #{isDefault},</if>
+        </set>
+        where config_option_id = #{configOptionId}
+    </update>
+
+    <delete id="deleteConfigOptionById" parameterType="Long">
+        delete from sys_product_config_option where config_option_id = #{configOptionId}
+    </delete>
+
+    <delete id="deleteConfigOptionsByGroupId" parameterType="Long">
+        delete from sys_product_config_option where config_group_id = #{configGroupId}
+    </delete>
+</mapper>

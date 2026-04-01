@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysOrderCouponMapper">
+    <resultMap type="SysOrderCoupon" id="SysOrderCouponResult">
+        <id property="id" column="id" />
+        <result property="orderId" column="order_id" />
+        <result property="couponId" column="coupon_id" />
+        <result property="discountAmount" column="discount_amount" />
+        <result property="createTime" column="create_time" />
+        <association property="coupon" column="coupon_id" resultMap="com.ruoyi.system.mapper.SysCouponMapper.SysCouponResult" />
+    </resultMap>
+
+    <sql id="selectOrderCouponVo">
+        select oc.id, oc.order_id, oc.coupon_id, oc.discount_amount, oc.create_time,
+               c.coupon_name, c.coupon_type, c.discount_value, c.min_amount, c.start_time, c.end_time, c.status
+        from sys_order_coupon oc
+        left join sys_coupon c on oc.coupon_id = c.coupon_id
+    </sql>
+
+    <select id="selectOrderCouponList" parameterType="SysOrderCoupon" resultMap="SysOrderCouponResult">
+        <include refid="selectOrderCouponVo" />
+        <where>
+            <if test="orderId != null">
+                and oc.order_id = #{orderId}
+            </if>
+            <if test="couponId != null">
+                and oc.coupon_id = #{couponId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectOrderCouponById" parameterType="Long" resultMap="SysOrderCouponResult">
+        <include refid="selectOrderCouponVo" />
+        where oc.id = #{id}
+    </select>
+
+    <select id="selectOrderCouponByOrderId" parameterType="Long" resultMap="SysOrderCouponResult">
+        <include refid="selectOrderCouponVo" />
+        where oc.order_id = #{orderId}
+    </select>
+
+    <insert id="insertOrderCoupon" parameterType="SysOrderCoupon" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_order_coupon
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">order_id,</if>
+            <if test="couponId != null">coupon_id,</if>
+            <if test="discountAmount != null">discount_amount,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">#{orderId},</if>
+            <if test="couponId != null">#{couponId},</if>
+            <if test="discountAmount != null">#{discountAmount},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateOrderCoupon" parameterType="SysOrderCoupon">
+        update sys_order_coupon
+        <set>
+            <if test="discountAmount != null">discount_amount = #{discountAmount},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOrderCouponById" parameterType="Long">
+        delete from sys_order_coupon where id = #{id}
+    </delete>
+
+    <delete id="deleteOrderCouponByIds" parameterType="Long[]">
+        delete from sys_order_coupon where id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

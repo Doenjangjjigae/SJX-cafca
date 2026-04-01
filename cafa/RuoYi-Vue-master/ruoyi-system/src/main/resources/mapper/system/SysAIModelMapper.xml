@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysAIModelMapper">
+    <resultMap type="com.ruoyi.system.domain.SysAIModel" id="SysAIModelResult">
+        <id     property="modelId"       column="model_id"      />
+        <result property="modelName"     column="model_name"    />
+        <result property="modelCode"     column="model_code"    />
+        <result property="apiKey"        column="api_key"       />
+        <result property="apiUrl"        column="api_url"       />
+        <result property="isEnabled"     column="is_enabled"    />
+        <result property="createTime"    column="create_time"   />
+        <result property="updateTime"    column="update_time"   />
+    </resultMap>
+
+    <select id="selectAIModelList" resultMap="SysAIModelResult">
+        select model_id, model_name, model_code, api_key, api_url, is_enabled, create_time, update_time
+        from sys_ai_model
+        order by model_id
+    </select>
+
+    <select id="selectAIModelById" parameterType="Long" resultMap="SysAIModelResult">
+        select model_id, model_name, model_code, api_key, api_url, is_enabled, create_time, update_time
+        from sys_ai_model
+        where model_id = #{modelId}
+    </select>
+
+    <select id="selectEnabledModel" resultMap="SysAIModelResult">
+        select model_id, model_name, model_code, api_key, api_url, is_enabled, create_time, update_time
+        from sys_ai_model
+        where is_enabled = 1
+        limit 1
+    </select>
+
+    <insert id="insertAIModel" parameterType="com.ruoyi.system.domain.SysAIModel">
+        insert into sys_ai_model (model_name, model_code, api_key, api_url, is_enabled)
+        values (#{modelName}, #{modelCode}, #{apiKey}, #{apiUrl}, #{isEnabled})
+    </insert>
+
+    <update id="updateAIModel" parameterType="com.ruoyi.system.domain.SysAIModel">
+        update sys_ai_model
+        <set>
+            <if test="modelName != null">model_name = #{modelName},</if>
+            <if test="modelCode != null">model_code = #{modelCode},</if>
+            <if test="apiKey != null">api_key = #{apiKey},</if>
+            <if test="apiUrl != null">api_url = #{apiUrl},</if>
+            <if test="isEnabled != null">is_enabled = #{isEnabled},</if>
+            update_time = CURRENT_TIMESTAMP
+        </set>
+        where model_id = #{modelId}
+    </update>
+
+    <delete id="deleteAIModelById" parameterType="Long">
+        delete from sys_ai_model where model_id = #{modelId}
+    </delete>
+
+    <update id="updateAllModelsDisabled">
+        update sys_ai_model set is_enabled = 0
+    </update>
+</mapper>

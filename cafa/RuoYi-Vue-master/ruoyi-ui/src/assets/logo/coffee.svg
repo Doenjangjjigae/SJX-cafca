@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="coffeeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B4513"/>
+      <stop offset="100%" style="stop-color:#5D3A1A"/>
+    </linearGradient>
+    <linearGradient id="steamGradient" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0"/>
+    </linearGradient>
+  </defs>
+  
+  <path d="M24 40 L24 100 Q24 116 40 116 L88 116 Q104 116 104 100 L104 40 Z" fill="url(#coffeeGradient)" stroke="#3E2723" stroke-width="3"/>
+  
+  <path d="M104 52 Q124 52 124 72 Q124 92 104 92" fill="none" stroke="#3E2723" stroke-width="6" stroke-linecap="round"/>
+  
+  <ellipse cx="64" cy="40" rx="40" ry="8" fill="#5D3A1A" stroke="#3E2723" stroke-width="2"/>
+  
+  <path d="M40 20 Q44 10 48 20 Q52 10 56 20" fill="none" stroke="url(#steamGradient)" stroke-width="4" stroke-linecap="round">
+    <animate attributeName="d" dur="2s" repeatCount="indefinite" 
+      values="M40 20 Q44 10 48 20 Q52 10 56 20;M40 18 Q44 8 48 18 Q52 8 56 18;M40 20 Q44 10 48 20 Q52 10 56 20"/>
+  </path>
+  <path d="M68 18 Q72 8 76 18 Q80 8 84 18" fill="none" stroke="url(#steamGradient)" stroke-width="4" stroke-linecap="round">
+    <animate attributeName="d" dur="2.5s" repeatCount="indefinite" 
+      values="M68 18 Q72 8 76 18 Q80 8 84 18;M68 16 Q72 6 76 16 Q80 6 84 16;M68 18 Q72 8 76 18 Q80 8 84 18"/>
+  </path>
+  
+  <ellipse cx="64" cy="44" rx="32" ry="5" fill="#D7CCC8" opacity="0.3"/>
+</svg>

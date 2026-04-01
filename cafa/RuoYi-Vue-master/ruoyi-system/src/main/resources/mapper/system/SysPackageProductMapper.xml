@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysPackageProductMapper">
+    <resultMap type="com.ruoyi.system.domain.SysPackageProduct" id="SysPackageProductResult">
+        <id property="id" column="id"/>
+        <result property="packageId" column="package_id"/>
+        <result property="productId" column="product_id"/>
+        <result property="quantity" column="quantity"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="selectPackageProductVo">
+        select id, package_id, product_id, quantity, create_time
+        from sys_package_product
+    </sql>
+
+    <select id="selectPackageProductByPackageId" parameterType="Long" resultMap="SysPackageProductResult">
+        <include refid="selectPackageProductVo"/>
+        where package_id = #{packageId}
+    </select>
+
+    <insert id="insertPackageProduct" parameterType="com.ruoyi.system.domain.SysPackageProduct" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_package_product (package_id, product_id, quantity, create_time)
+        values (#{packageId}, #{productId}, #{quantity}, #{createTime})
+    </insert>
+
+    <delete id="deletePackageProductByPackageId" parameterType="Long">
+        delete from sys_package_product where package_id = #{packageId}
+    </delete>
+</mapper>

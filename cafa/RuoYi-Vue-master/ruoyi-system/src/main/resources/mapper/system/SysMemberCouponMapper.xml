@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysMemberCouponMapper">
+    <resultMap type="SysMemberCoupon" id="SysMemberCouponResult">
+        <id property="id" column="id" />
+        <result property="memberId" column="member_id" />
+        <result property="couponId" column="coupon_id" />
+        <result property="receiveTime" column="receive_time" />
+        <result property="useStatus" column="use_status" />
+        <result property="useTime" column="use_time" />
+        <association property="coupon" resultMap="com.ruoyi.system.mapper.SysCouponMapper.SysCouponResult" />
+    </resultMap>
+
+    <sql id="selectMemberCouponVo">
+        select mc.id, mc.member_id, mc.coupon_id, mc.receive_time, mc.use_status, mc.use_time,
+               c.coupon_name, c.coupon_type, c.discount_value, c.min_amount, c.start_time, c.end_time, c.status
+        from sys_member_coupon mc
+        left join sys_coupon c on mc.coupon_id = c.coupon_id
+    </sql>
+
+    <select id="selectMemberCouponList" parameterType="SysMemberCoupon" resultMap="SysMemberCouponResult">
+        <include refid="selectMemberCouponVo" />
+        <where>
+            <if test="memberId != null">
+                and mc.member_id = #{memberId}
+            </if>
+            <if test="couponId != null">
+                and mc.coupon_id = #{couponId}
+            </if>
+            <if test="useStatus != null and useStatus != ''">
+                and mc.use_status = #{useStatus}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectMemberCouponById" parameterType="Long" resultMap="SysMemberCouponResult">
+        <include refid="selectMemberCouponVo" />
+        where mc.id = #{id}
+    </select>
+
+    <select id="selectMemberCouponByMemberId" parameterType="Long" resultMap="SysMemberCouponResult">
+        <include refid="selectMemberCouponVo" />
+        where mc.member_id = #{memberId}
+    </select>
+
+    <insert id="insertMemberCoupon" parameterType="SysMemberCoupon" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_member_coupon
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="memberId != null">member_id,</if>
+            <if test="couponId != null">coupon_id,</if>
+            <if test="receiveTime != null">receive_time,</if>
+            <if test="useStatus != null">use_status,</if>
+            <if test="useTime != null">use_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="memberId != null">#{memberId},</if>
+            <if test="couponId != null">#{couponId},</if>
+            <if test="receiveTime != null">#{receiveTime},</if>
+            <if test="useStatus != null">#{useStatus},</if>
+            <if test="useTime != null">#{useTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateMemberCoupon" parameterType="SysMemberCoupon">
+        update sys_member_coupon
+        <set>
+            <if test="useStatus != null">use_status = #{useStatus},</if>
+            <if test="useTime != null">use_time = #{useTime},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMemberCouponById" parameterType="Long">
+        delete from sys_member_coupon where id = #{id}
+    </delete>
+
+    <delete id="deleteMemberCouponByIds" parameterType="Long[]">
+        delete from sys_member_coupon where id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

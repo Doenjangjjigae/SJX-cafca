@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysProductConfigMaterialMapper">
+    
+    <resultMap type="SysProductConfigMaterial" id="ConfigMaterialResult">
+        <id property="id" column="id"/>
+        <result property="configOptionId" column="config_option_id"/>
+        <result property="materialId" column="material_id"/>
+        <result property="materialName" column="material_name"/>
+        <result property="quantity" column="quantity"/>
+    </resultMap>
+
+    <select id="selectMaterialsByOptionId" parameterType="Long" resultMap="ConfigMaterialResult">
+        select pcm.id, pcm.config_option_id, pcm.material_id, m.material_name, pcm.quantity
+        from sys_product_config_material pcm
+        left join sys_material m on pcm.material_id = m.material_id
+        where pcm.config_option_id = #{configOptionId}
+    </select>
+
+    <insert id="insertConfigMaterial" parameterType="SysProductConfigMaterial">
+        insert into sys_product_config_material (config_option_id, material_id, quantity, create_time)
+        values (#{configOptionId}, #{materialId}, #{quantity}, sysdate())
+    </insert>
+
+    <delete id="deleteMaterialsByOptionId" parameterType="Long">
+        delete from sys_product_config_material where config_option_id = #{configOptionId}
+    </delete>
+</mapper>

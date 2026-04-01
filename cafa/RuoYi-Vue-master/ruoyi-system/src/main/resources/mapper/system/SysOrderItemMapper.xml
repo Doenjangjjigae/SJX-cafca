@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysOrderItemMapper">
+    <resultMap type="com.ruoyi.system.domain.SysOrderItem" id="SysOrderItemResult">
+        <id property="id" column="id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="productId" column="product_id"/>
+        <result property="productName" column="product_name"/>
+        <result property="price" column="price"/>
+        <result property="quantity" column="quantity"/>
+        <result property="subtotal" column="subtotal"/>
+        <result property="createTime" column="create_time"/>
+        <result property="materialOptions" column="material_options"/>
+        <result property="configOptions" column="config_options"/>
+    </resultMap>
+
+    <sql id="selectOrderItemVo">
+        select id, order_id, product_id, product_name, price, quantity, subtotal, create_time, material_options, config_options
+        from sys_order_item
+    </sql>
+
+    <select id="selectOrderItemList" parameterType="com.ruoyi.system.domain.SysOrderItem" resultMap="SysOrderItemResult">
+        <include refid="selectOrderItemVo"/>
+        <where>
+            <if test="orderId != null">
+                and order_id = #{orderId}
+            </if>
+            <if test="productId != null">
+                and product_id = #{productId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectOrderItemByOrderId" parameterType="Long" resultMap="SysOrderItemResult">
+        <include refid="selectOrderItemVo"/>
+        where order_id = #{orderId}
+    </select>
+
+    <insert id="insertOrderItem" parameterType="com.ruoyi.system.domain.SysOrderItem" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_order_item (order_id, product_id, product_name, price, quantity, subtotal, create_time, material_options, config_options)
+        values (#{orderId}, #{productId}, #{productName}, #{price}, #{quantity}, #{subtotal}, #{createTime}, #{materialOptions}, #{configOptions})
+    </insert>
+
+    <delete id="deleteOrderItemByOrderId" parameterType="Long">
+        delete from sys_order_item where order_id = #{orderId}
+    </delete>
+
+    <update id="updateOrderItemById" parameterType="com.ruoyi.system.domain.SysOrderItem">
+        update sys_order_item
+        <set>
+            <if test="orderId != null">order_id = #{orderId},</if>
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="productName != null">product_name = #{productName},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="subtotal != null">subtotal = #{subtotal},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOrderItemByIds" parameterType="Long[]">
+        delete from sys_order_item where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

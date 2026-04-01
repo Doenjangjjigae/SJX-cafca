@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysPackageItemMapper">
+    
+    <resultMap type="SysPackageItem" id="PackageItemResult">
+        <id property="id" column="id"/>
+        <result property="packageId" column="package_id"/>
+        <result property="productId" column="product_id"/>
+        <result property="productName" column="product_name"/>
+        <result property="quantity" column="quantity"/>
+        <result property="productPrice" column="product_price"/>
+    </resultMap>
+
+    <select id="selectItemsByPackageId" parameterType="Long" resultMap="PackageItemResult">
+        select pi.id, pi.package_id, pi.product_id, p.product_name, pi.quantity, p.price as product_price
+        from sys_package_item pi
+        left join sys_product p on pi.product_id = p.product_id
+        where pi.package_id = #{packageId}
+    </select>
+
+    <insert id="insertPackageItem" parameterType="SysPackageItem">
+        insert into sys_package_item (package_id, product_id, quantity)
+        values (#{packageId}, #{productId}, #{quantity})
+    </insert>
+
+    <delete id="deleteItemsByPackageId" parameterType="Long">
+        delete from sys_package_item where package_id = #{packageId}
+    </delete>
+</mapper>

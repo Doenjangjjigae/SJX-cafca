@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysOrderPackageItemMapper">
+    <resultMap type="com.ruoyi.system.domain.SysOrderPackageItem" id="SysOrderPackageItemResult">
+        <id property="id" column="id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="packageId" column="package_id"/>
+        <result property="packageName" column="package_name"/>
+        <result property="price" column="price"/>
+        <result property="quantity" column="quantity"/>
+        <result property="subtotal" column="subtotal"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="selectOrderPackageItemVo">
+        select id, order_id, package_id, package_name, price, quantity, subtotal, create_time
+        from sys_order_package_item
+    </sql>
+
+    <select id="selectOrderPackageItemList" parameterType="com.ruoyi.system.domain.SysOrderPackageItem" resultMap="SysOrderPackageItemResult">
+        <include refid="selectOrderPackageItemVo"/>
+        <where>
+            <if test="orderId != null">
+                and order_id = #{orderId}
+            </if>
+            <if test="packageId != null">
+                and package_id = #{packageId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectOrderPackageItemById" parameterType="Long" resultMap="SysOrderPackageItemResult">
+        <include refid="selectOrderPackageItemVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectOrderPackageItemByOrderId" parameterType="Long" resultMap="SysOrderPackageItemResult">
+        <include refid="selectOrderPackageItemVo"/>
+        where order_id = #{orderId}
+    </select>
+
+    <insert id="insertOrderPackageItem" parameterType="com.ruoyi.system.domain.SysOrderPackageItem" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_order_package_item (order_id, package_id, package_name, price, quantity, subtotal, create_time)
+        values (#{orderId}, #{packageId}, #{packageName}, #{price}, #{quantity}, #{subtotal}, #{createTime})
+    </insert>
+
+    <update id="updateOrderPackageItem" parameterType="com.ruoyi.system.domain.SysOrderPackageItem">
+        update sys_order_package_item
+        <set>
+            <if test="orderId != null">order_id = #{orderId},</if>
+            <if test="packageId != null">package_id = #{packageId},</if>
+            <if test="packageName != null">package_name = #{packageName},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="subtotal != null">subtotal = #{subtotal},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOrderPackageItemByOrderId" parameterType="Long">
+        delete from sys_order_package_item where order_id = #{orderId}
+    </delete>
+
+    <delete id="deleteOrderPackageItemById" parameterType="Long">
+        delete from sys_order_package_item where id = #{id}
+    </delete>
+
+    <delete id="deleteOrderPackageItemByIds" parameterType="Long[]">
+        delete from sys_order_package_item where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

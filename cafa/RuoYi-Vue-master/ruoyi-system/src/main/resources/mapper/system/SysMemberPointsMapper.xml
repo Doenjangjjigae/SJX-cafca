@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysMemberPointsMapper">
+    <resultMap type="SysMemberPoints" id="SysMemberPointsResult">
+        <id property="id" column="id" />
+        <result property="memberId" column="member_id" />
+        <result property="memberCode" column="member_code" />
+        <result property="points" column="points" />
+        <result property="type" column="type" />
+        <result property="remark" column="remark" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+
+    <sql id="selectSysMemberPointsVo">
+        select id, member_id, member_code, points, type, remark, create_by, create_time 
+        from sys_member_points
+    </sql>
+
+    <select id="selectSysMemberPointsById" parameterType="Long" resultMap="SysMemberPointsResult">
+        <include refid="selectSysMemberPointsVo" />
+        where id = #{id}
+    </select>
+
+    <select id="selectSysMemberPointsByMemberId" parameterType="Long" resultMap="SysMemberPointsResult">
+        <include refid="selectSysMemberPointsVo" />
+        where member_id = #{memberId}
+        order by create_time desc
+    </select>
+
+    <select id="selectSysMemberPointsList" parameterType="SysMemberPoints" resultMap="SysMemberPointsResult">
+        <include refid="selectSysMemberPointsVo" />
+        <where>
+            <if test="memberId != null">
+                AND member_id = #{memberId}
+            </if>
+            <if test="memberCode != null and memberCode != ''">
+                AND member_code = #{memberCode}
+            </if>
+            <if test="type != null and type != ''">
+                AND type = #{type}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <insert id="insertSysMemberPoints" parameterType="SysMemberPoints" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_member_points(member_id, member_code, points, type, remark, create_by, create_time)
+        values(#{memberId}, #{memberCode}, #{points}, #{type}, #{remark}, #{createBy}, #{createTime})
+    </insert>
+
+    <delete id="deleteSysMemberPointsById" parameterType="Long">
+        delete from sys_member_points where id = #{id}
+    </delete>
+
+    <delete id="deleteSysMemberPointsByIds" parameterType="Long[]">
+        delete from sys_member_points where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
