@@ -69,10 +69,12 @@ public class SysMemberPointsServiceImpl implements ISysMemberPointsService {
         int result = sysMemberPointsMapper.insertSysMemberPoints(sysMemberPoints);
         if (result > 0) {
             // 更新会员总积分
-            sysMember.setTotalPoints(sysMember.getTotalPoints() + points);
-            sysMember.setUpdateBy(SecurityUtils.getUsername());
-            sysMember.setUpdateTime(new Date());
-            sysMemberMapper.updateSysMember(sysMember);
+            SysMember updateMember = new SysMember();
+            updateMember.setMemberId(memberId);
+            updateMember.setTotalPoints(points);
+            updateMember.setUpdateBy(SecurityUtils.getUsername());
+            updateMember.setUpdateTime(new Date());
+            sysMemberMapper.updateSysMemberPoints(updateMember);
         }
 
         return result;
