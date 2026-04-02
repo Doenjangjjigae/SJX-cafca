@@ -48,7 +48,15 @@ public class AIServiceImpl implements IAIService {
             return "抱歉，未配置启用的AI模型，请联系管理员。";
         }
 
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+        try (CloseableHttpClient httpClient = HttpClients.custom()
+                .setConnectionTimeToLive(60, java.util.concurrent.TimeUnit.SECONDS)
+                .setDefaultRequestConfig(org.apache.http.client.config.RequestConfig.custom()
+                        .setConnectTimeout(60000)
+                        .setSocketTimeout(60000)
+                        .setConnectionRequestTimeout(60000)
+                        .build())
+                .build()) {
+            
             HttpPost httpPost = new HttpPost(model.getApiUrl());
             httpPost.setHeader("Authorization", "Bearer " + model.getApiKey());
             httpPost.setHeader("Content-Type", "application/json");
@@ -63,8 +71,8 @@ public class AIServiceImpl implements IAIService {
                 requestBody.put("model", "gpt-3.5-turbo");
             }
             requestBody.put("messages", new Object[] {
-                Map.of("role", "system", "content", "你是一个咖啡店管理系统的智能助手，要根据提供的系统信息回答用户问题。"),
-                Map.of("role", "user", "content", prompt)
+                createMessageMap("system", "你是一个咖啡店管理系统的智能助手，要根据提供的系统信息回答用户问题。"),
+                createMessageMap("user", prompt)
             });
             requestBody.put("temperature", 0.7);
             requestBody.put("max_tokens", 1000);
@@ -77,6 +85,7 @@ public class AIServiceImpl implements IAIService {
                 HttpEntity responseEntity = response.getEntity();
                 if (responseEntity != null) {
                     String responseString = EntityUtils.toString(responseEntity);
+                    System.out.println("大模型返回结果： = " + responseString);
                     JsonObject jsonObject = JsonParser.parseString(responseString).getAsJsonObject();
                     if (jsonObject.has("choices")) {
                         return jsonObject.get("choices").getAsJsonArray()
@@ -90,5 +99,12 @@ public class AIServiceImpl implements IAIService {
             e.printStackTrace();
         }
         return "抱歉，我暂时无法回答您的问题，请稍后再试。";
+    }
+
+    private Map<String, String> createMessageMap(String role, String content) {
+        Map<String, String> map = new HashMap<>();
+        map.put("role", role);
+        map.put("content", content);
+        return map;
     }
 }

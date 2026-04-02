@@ -20,6 +20,10 @@ server:
   servlet:
     # 应用的访问路径
     context-path: /
+    session:
+      timeout: 30m
+  # 连接超时时间（1分钟）
+#  connection-timeout: 60s
   tomcat:
     # tomcat的URI编码
     uri-encoding: UTF-8
@@ -87,6 +91,9 @@ spring:
         max-active: 8
         # #连接池最大阻塞等待时间（使用负值表示没有限制）
         max-wait: -1ms
+  mvc:
+    async:
+      request-timeout: 120000
 
 # token配置
 token:
