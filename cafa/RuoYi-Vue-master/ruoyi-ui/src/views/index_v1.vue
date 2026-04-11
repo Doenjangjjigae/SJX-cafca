@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="dashboard-editor-container">
 
     <panel-group @handleSetLineChartData="handleSetLineChartData" />
@@ -95,4 +95,4 @@ export default {
     padding: 8px;
   }
 }
-</style>
+</style> -->

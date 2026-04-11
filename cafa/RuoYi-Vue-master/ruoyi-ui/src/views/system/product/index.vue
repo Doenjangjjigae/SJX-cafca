@@ -100,7 +100,7 @@
       <el-table-column label="商品ID" align="center" prop="productId" />
       <el-table-column label="商品图片" align="center" width="100">
         <template slot-scope="scope">
-          <img v-if="scope.row.imageUrl" :src="scope.row.imageUrl" class="list-avatar" />
+          <img v-if="scope.row.imageUrl" :src="getImageUrl(scope.row.imageUrl)" class="list-avatar" />
           <i v-else class="el-icon-picture-outline list-avatar-placeholder"></i>
         </template>
       </el-table-column>
@@ -202,7 +202,7 @@
                 :headers="{ Authorization: 'Bearer ' + token }"
                 accept="image/*"
               >
-                <img v-if="form.imageUrl" :src="form.imageUrl" class="avatar">
+                <img v-if="form.imageUrl" :src="getImageUrl(form.imageUrl)" class="avatar">
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
             </el-form-item>
@@ -430,6 +430,13 @@ export default {
     this.loadMaterialList()
   },
   methods: {
+    getImageUrl(url) {
+      if (!url) return ''
+      if (url.startsWith('http://') || url.startsWith('https://')) {
+        return url
+      }
+      return process.env.VUE_APP_BASE_API + url
+    },
     hasConfig(row) {
       return (row.materials && row.materials.length > 0) || 
              (row.configGroups && row.configGroups.length > 0) ||

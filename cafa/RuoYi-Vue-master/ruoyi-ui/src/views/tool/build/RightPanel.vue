@@ -938,7 +938,7 @@ export default {
   font-size: 18px;
 }
 .node-label{
-  font-size: 14px;
+  font-size: 24px;
 }
 .node-icon{
   color: #bebfc3;

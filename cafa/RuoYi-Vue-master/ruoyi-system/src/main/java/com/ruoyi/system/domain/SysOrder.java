@@ -46,6 +46,10 @@ public class SysOrder extends BaseEntity {
     @Excel(name = "实际支付金额", cellType = Excel.ColumnType.NUMERIC, scale = 2)
     private BigDecimal actualAmount;
 
+    /** 使用积分 */
+    @Excel(name = "使用积分")
+    private Integer usePoints;
+
     /** 状态（0-待支付，1-已支付，2-已完成，3-已取消） */
     @Excel(name = "状态", readConverterExp = "0=待支付,1=已支付,2=已完成,3=已取消")
     private String status;
@@ -154,6 +158,14 @@ public class SysOrder extends BaseEntity {
 
     public void setActualAmount(BigDecimal actualAmount) {
         this.actualAmount = actualAmount;
+    }
+
+    public Integer getUsePoints() {
+        return usePoints;
+    }
+
+    public void setUsePoints(Integer usePoints) {
+        this.usePoints = usePoints;
     }
 
     public Date getBeginTime() {

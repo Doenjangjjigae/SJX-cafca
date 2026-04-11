@@ -83,7 +83,7 @@
                 show-input
                 style="width: 100%"
               />
-              <div style="margin-top: 5px; color: #909399; font-size: 12px">
+              <div style="margin-top: 5px; color: #909399; font-size: 22px">
                 可用积分: {{ memberTotalPoints }} 分，可抵扣 ¥{{ (memberTotalPoints * 0.01).toFixed(2) }}（1积分=0.01元）
               </div>
             </el-form-item>
@@ -980,6 +980,7 @@ export default {
       checkout(checkoutData).then(response => {
         this.$message.success('收银成功')
         this.resetForm()
+        this.$bus.emit('orderCreated')
       }).catch(error => {
         this.$message.error('收银失败：' + (error.msg || error.message || '未知错误'))
       })
@@ -1051,51 +1052,44 @@ export default {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 30px;
+  gap: 35px;
+  flex-wrap: nowrap;
 }
 
 .amount-item {
   display: flex;
   align-items: center;
   gap: 10px;
+  white-space: nowrap;
+}
+
+.amount-item span:first-child {
+  font-size: 16px;
+  color: #606266;
+  white-space: nowrap;
 }
 
 .amount-value {
-  font-size: 16px;
+  font-size: 22px;
   font-weight: bold;
+  white-space: nowrap;
 }
 
 .amount-value.discount {
   color: #f56c6c;
 }
 
-.amount-item.total {
-  font-size: 18px;
-}
-
 .amount-value.total {
   color: #409eff;
-  font-size: 20px;
-}
-
-.amount-item.points {
-  font-size: 16px;
+  font-size: 26px;
 }
 
 .amount-value.points {
   color: #67c23a;
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.amount-item.points-after {
-  font-size: 16px;
 }
 
 .amount-value.points-after {
   color: #e6a23c;
-  font-size: 18px;
-  font-weight: bold;
 }
 
 .cashier-buttons {

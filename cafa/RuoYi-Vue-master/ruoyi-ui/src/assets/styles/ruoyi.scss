@@ -91,17 +91,23 @@
 .el-table {
   .el-table__header-wrapper, .el-table__fixed-header-wrapper {
     th {
-      word-break: break-word;
+      white-space: nowrap;
       background-color: #f8f8f9;
       color: #515a6e;
       height: 40px;
-      font-size: 13px;
+      font-size: 15px;
+      line-height: 40px;
     }
   }
 
   .el-table__body-wrapper {
     .el-button [class*="el-icon-"] + span {
       margin-left: 1px;
+    }
+
+    td {
+      font-size: 14px;
+      color: #303133;
     }
   }
 }

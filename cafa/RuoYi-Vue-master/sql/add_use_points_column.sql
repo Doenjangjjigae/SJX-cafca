@@ -1,0 +1,1 @@
+ALTER TABLE `sys_order` ADD COLUMN IF NOT EXISTS `use_points` INT(11) DEFAULT 0 COMMENT '使用积分' AFTER `actual_amount`;

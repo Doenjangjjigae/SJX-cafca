@@ -297,6 +297,9 @@
         <el-descriptions-item label="优惠金额">
           <span style="color: #f56c6c; font-weight: bold;">¥{{ orderDetail.order.discountAmount ? orderDetail.order.discountAmount.toFixed(2) : '0.00' }}</span>
         </el-descriptions-item>
+        <el-descriptions-item label="积分抵扣">
+          <span style="color: #67c23a; font-weight: bold;">{{ getUsePointsText() }}</span>
+        </el-descriptions-item>
         <el-descriptions-item label="实付金额">
           <span style="color: #409eff; font-weight: bold; font-size: 16px;">¥{{ orderDetail.order.actualAmount ? orderDetail.order.actualAmount.toFixed(2) : '0.00' }}</span>
         </el-descriptions-item>
@@ -311,10 +314,18 @@
 
       <el-divider content-position="left">商品列表</el-divider>
       <el-table :data="orderDetail.items" border style="width: 100%" v-if="orderDetail.items && orderDetail.items.length > 0">
-        <el-table-column label="商品名称" prop="productName" />
+        <el-table-column label="商品名称" width="200">
+          <template slot-scope="scope">
+            {{ scope.row.productName }}
+            <div v-if="scope.row.configOptionsText" style="font-size: 12px; color: #909399; margin-top: 4px;">
+              {{ scope.row.configOptionsText }}
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column label="单价" width="100">
           <template slot-scope="scope">
             ¥{{ scope.row.price ? scope.row.price.toFixed(2) : '0.00' }}
+            <span v-if="scope.row.extraPrice > 0" style="color: #f56c6c; font-size: 12px;">+¥{{ scope.row.extraPrice.toFixed(2) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="数量" prop="quantity" width="80" />
@@ -323,9 +334,11 @@
             ¥{{ scope.row.subtotal ? scope.row.subtotal.toFixed(2) : '0.00' }}
           </template>
         </el-table-column>
-        <el-table-column label="原料选项" width="150">
+        <el-table-column label="配置选项" width="200">
           <template slot-scope="scope">
-            <span v-if="scope.row.materialOptions">{{ formatMaterialOptions(scope.row.materialOptions) }}</span>
+            <span v-if="scope.row.configOptionList && scope.row.configOptionList.length > 0">
+              {{ formatConfigOptions(scope.row.configOptionList) }}
+            </span>
             <span v-else>-</span>
           </template>
         </el-table-column>
@@ -334,10 +347,18 @@
 
       <el-divider content-position="left">套餐列表</el-divider>
       <el-table :data="orderDetail.packageItems" border style="width: 100%" v-if="orderDetail.packageItems && orderDetail.packageItems.length > 0">
-        <el-table-column label="套餐名称" prop="packageName" />
+        <el-table-column label="套餐名称" width="200">
+          <template slot-scope="scope">
+            {{ scope.row.packageName }}
+            <div v-if="scope.row.configOptionsText" style="font-size: 12px; color: #909399; margin-top: 4px;">
+              {{ scope.row.configOptionsText }}
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column label="单价" width="100">
           <template slot-scope="scope">
             ¥{{ scope.row.price ? scope.row.price.toFixed(2) : '0.00' }}
+            <span v-if="scope.row.extraPrice > 0" style="color: #f56c6c; font-size: 12px;">+¥{{ scope.row.extraPrice.toFixed(2) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="数量" prop="quantity" width="80" />
@@ -450,9 +471,24 @@ export default {
     }
   },
   created() {
+    this.handleRouteParams()
     this.getList()
   },
+  beforeMount() {
+    this.handleRouteParams()
+  },
   methods: {
+    handleRouteParams() {
+      const dateRange = this.$route.query.dateRange
+      if (dateRange) {
+        const dates = dateRange.split(',')
+        if (dates.length === 2) {
+          this.dateRange = [dates[0], dates[1]]
+          this.queryParams.beginTime = dates[0]
+          this.queryParams.endTime = dates[1]
+        }
+      }
+    },
     getList() {
       this.loading = true
       listOrder(this.queryParams).then(response => {
@@ -566,6 +602,17 @@ export default {
       } catch (e) {
         return options
       }
+    },
+    formatConfigOptions(configOptionList) {
+      if (!configOptionList || !Array.isArray(configOptionList)) return '-'
+      return configOptionList.map(o => o.optionName).join('、')
+    },
+    getUsePointsText() {
+      const points = this.orderDetail && this.orderDetail.order && this.orderDetail.order.usePoints
+      if (!points || points === 0) return '0积分 (¥0.00)'
+      const pointsValue = parseInt(points) || 0
+      const discountValue = (pointsValue * 0.01).toFixed(2)
+      return pointsValue + '积分 (¥' + discountValue + ')'
     },
     formatPackageItemConfigs(itemConfigs) {
       if (!itemConfigs || !Array.isArray(itemConfigs)) return '-'

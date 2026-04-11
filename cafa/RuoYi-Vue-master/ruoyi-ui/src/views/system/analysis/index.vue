@@ -139,6 +139,27 @@ export default {
       this.queryParams.type = 'day'
       this.handleQuery()
     },
+    goToOrderList(timeStr) {
+      let dateRange = ''
+      if (this.queryParams.type === 'day') {
+        dateRange = timeStr + ',' + timeStr
+      } else if (this.queryParams.type === 'week') {
+        const [year, week] = timeStr.split('-W')
+        const date = new Date(year, 0, 1 + (parseInt(week) - 1) * 7)
+        const startDate = date.toISOString().split('T')[0]
+        const endDate = new Date(date.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+        dateRange = startDate + ',' + endDate
+      } else {
+        const [year, month] = timeStr.split('-')
+        const startDate = `${year}-${String(month).padStart(2, '0')}-01`
+        const endDate = new Date(parseInt(year), parseInt(month), 0).toISOString().split('T')[0]
+        dateRange = startDate + ',' + endDate
+      }
+      this.$router.push({
+        path: '/system/order',
+        query: { dateRange: dateRange }
+      })
+    },
     getSalesData() {
       getSalesAnalysis(this.queryParams.type, this.queryParams.beginTime, this.queryParams.endTime).then(response => {
         const data = response.data || []
@@ -192,6 +213,11 @@ export default {
             }
           }]
         })
+
+        this.salesChart.off('click')
+        this.salesChart.on('click', (params) => {
+          this.goToOrderList(params.name)
+        })
       })
     },
     getOrderData() {
@@ -228,6 +254,11 @@ export default {
               color: '#67C23A'
             }
           }]
+        })
+
+        this.orderChart.off('click')
+        this.orderChart.on('click', (params) => {
+          this.goToOrderList(params.name)
         })
       })
     },

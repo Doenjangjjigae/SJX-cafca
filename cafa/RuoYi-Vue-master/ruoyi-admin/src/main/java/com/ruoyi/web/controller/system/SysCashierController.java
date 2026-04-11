@@ -188,6 +188,7 @@ public class SysCashierController extends BaseController {
             order.setTotalAmount(request.getTotalAmount());
             order.setDiscountAmount(request.getDiscountAmount());
             order.setActualAmount(request.getActualAmount());
+            order.setUsePoints(request.getUsePoints());
             order.setStatus("1");
             order.setCreateBy(getUsername());
             order.setUpdateBy(getUsername());

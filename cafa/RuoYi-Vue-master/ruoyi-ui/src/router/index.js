@@ -168,12 +168,6 @@ export const dynamicRoutes = [
     permissions: ['system:ai:list'],
     children: [
       {
-        path: 'index',
-        component: () => import('@/views/system/ai/index'),
-        name: 'AI',
-        meta: { title: 'AI客服', icon: 'chat-line-round' }
-      },
-      {
         path: 'model',
         component: () => import('@/views/system/aiModel/index'),
         name: 'AIModel',

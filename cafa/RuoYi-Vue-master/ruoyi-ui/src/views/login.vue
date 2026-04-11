@@ -214,7 +214,7 @@ export default {
   text-align: center;
   color: #fff;
   font-family: Arial;
-  font-size: 12px;
+  font-size: 22px;
   letter-spacing: 1px;
 }
 .login-code-img {

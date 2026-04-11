@@ -451,7 +451,7 @@ export default {
     text-align: center;
     z-index: 1;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 22px;
     &:hover{
       background: rgba(210, 23, 23, 0.5)
     }
@@ -474,7 +474,7 @@ export default {
 
 .custom-tree-node{
   width: 100%;
-  font-size: 14px;
+  font-size: 24px;
   .node-operation{
     float: right;
   }
@@ -746,7 +746,7 @@ $lighterBlue: #409EFF;
     line-height: 22px;
     text-align: center;
     border-radius: 50%;
-    font-size: 12px;
+    font-size: 22px;
     border: 1px solid;
     cursor: pointer;
     z-index: 1;

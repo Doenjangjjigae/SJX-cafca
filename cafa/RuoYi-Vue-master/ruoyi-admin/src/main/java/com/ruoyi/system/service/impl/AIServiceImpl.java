@@ -14,18 +14,43 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.system.domain.SysAIModel;
+import com.ruoyi.system.domain.SysMember;
+import com.ruoyi.system.domain.SysOrder;
+import com.ruoyi.system.domain.SysProduct;
+import com.ruoyi.system.domain.SysTable;
 import com.ruoyi.system.service.IAIService;
 import com.ruoyi.system.service.ISysAIModelService;
+import com.ruoyi.system.service.ISysMemberService;
+import com.ruoyi.system.service.ISysOrderService;
+import com.ruoyi.system.service.ISysProductService;
+import com.ruoyi.system.service.ISysTableService;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class AIServiceImpl implements IAIService {
 
     @Autowired
     private ISysAIModelService sysAIModelService;
+    
+    @Autowired
+    private ISysProductService productService;
+    
+    @Autowired
+    private ISysMemberService memberService;
+    
+    @Autowired
+    private ISysTableService tableService;
+    
+    @Autowired
+    private ISysOrderService orderService;
 
     public String getAIResponse(String question) {
         String context = buildSystemContext();
@@ -34,12 +59,42 @@ public class AIServiceImpl implements IAIService {
     }
 
     private String buildSystemContext() {
-        return "系统信息：\n" +
-               "1. 产品：拿铁咖啡(30元)、美式咖啡(25元)、卡布奇诺(35元)\n" +
-               "2. 库存：咖啡豆剩余10kg、牛奶剩余5L\n" +
-               "3. 今日销售：已售出50杯咖啡，销售额1500元\n" +
-               "4. 会员：现有会员100人，今日新增2人\n" +
-               "5. 桌台：共10张桌台，当前占用6张\n";
+        StringBuilder context = new StringBuilder("系统信息：\n");
+        
+        List<SysProduct> products = productService.selectProductList(new SysProduct());
+        StringBuilder productInfo = new StringBuilder("1. 在售产品：");
+        for (SysProduct product : products) {
+            if (product.getStatus() != null && "1".equals(product.getStatus())) {
+                if (productInfo.length() > 6) {
+                    productInfo.append("、");
+                }
+                productInfo.append(product.getProductName()).append("(").append(product.getPrice()).append("元)");
+            }
+        }
+        if (productInfo.length() == 6) {
+            productInfo.append("暂无在售产品");
+        }
+        context.append(productInfo).append("\n");
+        
+        List<SysMember> members = memberService.selectMemberList(new SysMember());
+        context.append("2. 会员：现有会员").append(members.size()).append("人\n");
+        
+        List<SysTable> tables = tableService.selectTableList(new SysTable());
+        long occupiedCount = tables.stream().filter(t -> t.getStatus() != null && t.getStatus().equals("占用")).count();
+        context.append("3. 桌台：共").append(tables.size()).append("张桌台，当前占用").append(occupiedCount).append("张\n");
+        
+        List<SysOrder> allOrders = orderService.selectOrderList(new SysOrder());
+        String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        List<SysOrder> todayOrders = allOrders.stream()
+                .filter(o -> o.getCreateTime() != null && o.getCreateTime().toString().contains(today))
+                .collect(Collectors.toList());
+        BigDecimal todaySales = todayOrders.stream()
+                .filter(o -> o.getStatus() != null && Integer.parseInt(o.getStatus()) >= 1)
+                .map(SysOrder::getTotalAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        context.append("4. 今日销售：已售出").append(todayOrders.size()).append("单，销售额").append(todaySales).append("元\n");
+        
+        return context.toString();
     }
 
     private String callAIApi(String prompt) {
