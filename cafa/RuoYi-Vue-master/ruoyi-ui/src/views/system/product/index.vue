@@ -98,6 +98,12 @@
     <el-table v-loading="loading" :data="productList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="商品ID" align="center" prop="productId" />
+      <el-table-column label="商品图片" align="center" width="100">
+        <template slot-scope="scope">
+          <img v-if="scope.row.imageUrl" :src="scope.row.imageUrl" class="list-avatar" />
+          <i v-else class="el-icon-picture-outline list-avatar-placeholder"></i>
+        </template>
+      </el-table-column>
       <el-table-column label="商品名称" align="center" prop="productName" />
       <el-table-column label="商品编码" align="center" prop="productCode" />
       <el-table-column label="单价" align="center" prop="price" />
@@ -184,9 +190,27 @@
             </el-form-item>
           </el-col>
         </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="商品图片">
+              <el-upload
+                class="avatar-uploader"
+                :action="'/dev-api/common/upload'"
+                :show-file-list="false"
+                :on-success="handleImageUpload"
+                :before-upload="beforeImageUpload"
+                :headers="{ Authorization: 'Bearer ' + token }"
+                accept="image/*"
+              >
+                <img v-if="form.imageUrl" :src="form.imageUrl" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+              </el-upload>
+            </el-form-item>
+          </el-col>
+        </el-row>
 
         <el-divider content-position="left">默认原料配置</el-divider>
-        
+
         <el-button type="primary" size="small" icon="el-icon-plus" @click="addDefaultMaterial" style="margin-bottom: 15px;">
           添加默认原料
         </el-button>
@@ -218,7 +242,7 @@
         <el-empty v-else description="暂无默认原料配置" :image-size="60" />
 
         <el-divider content-position="left">配置选项（温度、冰量、甜度、加料等）</el-divider>
-        
+
         <el-button type="primary" size="small" icon="el-icon-plus" @click="addConfigGroup" style="margin-bottom: 15px;">
           添加配置组
         </el-button>
@@ -258,13 +282,13 @@
                   </el-form-item>
                 </el-col>
               </el-row>
-              
+
               <el-divider content-position="left">选项配置</el-divider>
-              
+
               <el-button type="success" size="mini" icon="el-icon-plus" @click="addConfigOption(group)" style="margin-bottom: 10px;">
                 添加选项
               </el-button>
-              
+
               <el-table :data="group.options" border size="small" v-if="group.options && group.options.length > 0">
                 <el-table-column label="选项名称" width="120">
                   <template slot-scope="scope">
@@ -353,6 +377,7 @@
 import { listProduct, getProduct, addProduct, updateProduct, delProduct, delProducts, listMaterial } from '@/api/system/product'
 import Pagination from '@/components/Pagination'
 import RightToolbar from '@/components/RightToolbar'
+import { getToken } from '@/utils/auth'
 
 export default {
   name: 'Product',
@@ -393,12 +418,14 @@ export default {
       },
       materialList: [],
       materialDialogVisible: false,
-      currentOption: null,
-      currentOptionIndex: -1,
-      currentGroupIndex: -1
+    currentOption: null,
+    currentOptionIndex: -1,
+    currentGroupIndex: -1,
+    token: ''
     }
   },
   created() {
+    this.token = getToken()
     this.getList()
     this.loadMaterialList()
   },
@@ -591,6 +618,25 @@ export default {
     confirmOptionMaterials() {
       this.form.configGroups[this.currentGroupIndex].options[this.currentOptionIndex].materials = this.currentOption.materials
       this.materialDialogVisible = false
+    },
+    handleImageUpload(response) {
+      if (response.code === 200) {
+        this.form.imageUrl = response.url
+        this.$modal.msgSuccess('图片上传成功')
+      } else {
+        this.$modal.msgError('图片上传失败')
+      }
+    },
+    beforeImageUpload(file) {
+      const isJPG = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif'
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (!isJPG) {
+        this.$modal.msgError('只能上传图片文件！')
+      }
+      if (!isLt2M) {
+        this.$modal.msgError('图片大小不能超过 2MB！')
+      }
+      return isJPG && isLt2M
     }
   }
 }
@@ -601,5 +647,42 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 120px;
+  height: 120px;
+  line-height: 120px;
+  text-align: center;
+}
+.avatar {
+  width: 120px;
+  height: 120px;
+  display: block;
+}
+.list-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+.list-avatar-placeholder {
+  font-size: 40px;
+  color: #d9d9d9;
+  width: 60px;
+  height: 60px;
+  line-height: 60px;
+  text-align: center;
 }
 </style>

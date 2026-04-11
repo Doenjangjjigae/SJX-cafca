@@ -1,9 +1,15 @@
 <template>
   <div class="ai-assistant">
-    <div class="chat-window" v-if="show">
+    <div class="chat-window" v-if="show" :class="{ 'fullscreen': fullscreen }">
       <div class="chat-header">
         <h3>AI智能助手</h3>
-        <button class="close-btn" @click="show = false">×</button>
+        <div class="header-buttons">
+          <button class="fullscreen-btn" @click="toggleFullscreen">
+            <i v-if="!fullscreen" class="el-icon-full-screen"></i>
+            <i v-else class="el-icon-remove"></i>
+          </button>
+          <button class="close-btn" @click="show = false">×</button>
+        </div>
       </div>
       <div class="messages" ref="messagesContainer">
         <div v-for="(msg, index) in messages" :key="index" 
@@ -35,7 +41,8 @@ export default {
       show: false,
       inputMessage: '',
       messages: [],
-      loading: false
+      loading: false,
+      fullscreen: false
     }
   },
   mounted() {
@@ -86,6 +93,11 @@ export default {
           container.scrollTop = container.scrollHeight
         }
       })
+    },
+    toggleFullscreen() {
+      this.fullscreen = !this.fullscreen
+      // 控制左侧菜单的显示/隐藏
+      this.$store.dispatch('app/toggleSideBarHide', this.fullscreen)
     }
   }
 }
@@ -130,6 +142,18 @@ export default {
   display: flex;
   flex-direction: column;
   margin-bottom: 10px;
+  transition: all 0.3s ease;
+}
+
+.chat-window.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+  margin: 0;
+  z-index: 9999;
 }
 
 .chat-header {
@@ -146,6 +170,30 @@ export default {
   margin: 0;
   font-size: 16px;
   font-weight: 500;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.fullscreen-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fullscreen-btn:hover {
+  opacity: 0.8;
 }
 
 .close-btn {

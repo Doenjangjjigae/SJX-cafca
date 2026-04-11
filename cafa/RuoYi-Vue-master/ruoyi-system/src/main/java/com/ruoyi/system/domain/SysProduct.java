@@ -22,6 +22,8 @@ public class SysProduct extends BaseEntity {
 
     private String remark;
 
+    private String imageUrl;
+
     private List<SysProductMaterial> materials;
 
     private List<SysProductConfigGroup> configGroups;
@@ -82,6 +84,14 @@ public class SysProduct extends BaseEntity {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public List<SysProductMaterial> getMaterials() {
