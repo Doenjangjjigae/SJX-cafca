@@ -222,7 +222,7 @@ export default {
     this.loadData()
     this.startAutoUpdate()
     
-    this.$bus.on('orderCreated', () => {
+    this.$bus.$on('orderCreated', () => {
       this.loadData()
     })
   },
@@ -230,7 +230,7 @@ export default {
     if (this.updateTimer) {
       clearInterval(this.updateTimer)
     }
-    this.$bus.off('orderCreated')
+    this.$bus.$off('orderCreated')
   },
   methods: {
     goToPage(path) {

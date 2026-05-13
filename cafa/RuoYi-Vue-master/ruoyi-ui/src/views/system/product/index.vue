@@ -627,7 +627,7 @@ export default {
       this.materialDialogVisible = false
     },
     handleImageUpload(response) {
-      if (response.code === 200) {
+      if (response && response.url) {
         this.form.imageUrl = response.url
         this.$modal.msgSuccess('图片上传成功')
       } else {

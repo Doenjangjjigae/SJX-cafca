@@ -980,7 +980,7 @@ export default {
       checkout(checkoutData).then(response => {
         this.$message.success('收银成功')
         this.resetForm()
-        this.$bus.emit('orderCreated')
+        this.$bus.$emit('orderCreated')
       }).catch(error => {
         this.$message.error('收银失败：' + (error.msg || error.message || '未知错误'))
       })
