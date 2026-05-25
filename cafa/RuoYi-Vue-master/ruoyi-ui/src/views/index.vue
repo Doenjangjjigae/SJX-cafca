@@ -260,11 +260,12 @@ export default {
       console.log('Loading data...')
       console.log('Date:', dateStr)
       
+      // 今日订单和营收
       listOrder({ beginTime: dateStr, endTime: dateStr }).then(response => {
         console.log('Order response:', response)
-        if (response && response.data) {
-          this.todayOrders = response.data.total || 0
-          const rows = response.data.rows || response.data.records || []
+        if (response) {
+          this.todayOrders = response.total || 0
+          const rows = response.rows || []
           console.log('Order rows:', rows)
           this.todayRevenue = rows.reduce((sum, order) => {
             const amount = Number(order.actualAmount) || Number(order.totalAmount) || 0
@@ -277,20 +278,22 @@ export default {
         this.todayRevenue = 0
       })
       
+      // 会员数量
       listMember().then(response => {
         console.log('Member response:', response)
-        if (response && response.data) {
-          this.memberCount = response.data.total || 0
+        if (response) {
+          this.memberCount = response.total || 0
         }
       }).catch((error) => {
         console.error('Member API error:', error)
         this.memberCount = 0
       })
       
+      // 产品种类
       listProduct().then(response => {
         console.log('Product response:', response)
-        if (response && response.data) {
-          this.productCount = response.data.total || 0
+        if (response) {
+          this.productCount = response.total || 0
         }
       }).catch((error) => {
         console.error('Product API error:', error)

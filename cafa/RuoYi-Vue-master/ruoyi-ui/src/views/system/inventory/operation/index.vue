@@ -216,19 +216,15 @@ export default {
         if (valid) {
           if (this.operationType === 1) {
             addStock(this.stockForm).then(response => {
-              if (response.code === 200) {
-                this.msgSuccess('进货成功')
-                this.stockOpen = false
-                this.getList()
-              }
+              this.$modal.msgSuccess('进货成功')
+              this.stockOpen = false
+              this.getList()
             })
           } else {
             stockTake(this.stockForm).then(response => {
-              if (response.code === 200) {
-                this.msgSuccess('盘点成功')
-                this.stockOpen = false
-                this.getList()
-              }
+              this.$modal.msgSuccess('盘点成功')
+              this.stockOpen = false
+              this.getList()
             })
           }
         }

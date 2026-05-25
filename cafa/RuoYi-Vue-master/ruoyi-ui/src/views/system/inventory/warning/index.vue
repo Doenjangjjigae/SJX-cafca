@@ -120,13 +120,10 @@ export default {
           const promises = materialIds.map(materialId => {
             return setWarningThreshold(materialId, this.thresholdForm.warningThreshold)
           })
-          Promise.all(promises).then(responses => {
-            const success = responses.every(response => response.code === 200)
-            if (success) {
-              this.msgSuccess('阈值设置成功')
-              this.thresholdOpen = false
-              this.getList()
-            }
+          Promise.all(promises).then(() => {
+            this.$modal.msgSuccess('阈值设置成功')
+            this.thresholdOpen = false
+            this.getList()
           })
         }
       })

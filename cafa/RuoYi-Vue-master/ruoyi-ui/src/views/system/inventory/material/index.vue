@@ -211,9 +211,6 @@ export default {
         this.materialList = response.rows
         this.total = response.total
         this.loading = false
-      }).catch(error => {
-        this.msgError(error.msg || '获取数据失败，请稍后重试')
-        this.loading = false
       })
     },
     /** 搜索按钮操作 */
@@ -232,6 +229,7 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
+      this.resetForm('form')
       this.form = {
         materialName: '',
         specification: '',
@@ -247,12 +245,11 @@ export default {
     /** 修改按钮操作 */
     handleEdit(row) {
       this.resetForm('form')
-      getMaterial(row.materialId).then(response => {
+      const materialId = row.materialId
+      getMaterial(materialId).then(response => {
         this.form = response.data
         this.open = true
         this.title = '修改原料信息'
-      }).catch(error => {
-        this.msgError(error.msg || '获取数据失败，请稍后重试')
       })
     },
     /** 提交按钮 */
@@ -261,27 +258,15 @@ export default {
         if (valid) {
           if (this.form.materialId != null) {
             updateMaterial(this.form).then(response => {
-              if (response.code === 200) {
-                this.msgSuccess('修改成功')
-                this.open = false
-                this.getList()
-              } else {
-                this.msgError(response.msg || '修改失败')
-              }
-            }).catch(error => {
-              this.msgError(error.msg || '网络错误，请稍后重试')
+              this.$modal.msgSuccess('修改成功')
+              this.open = false
+              this.getList()
             })
           } else {
             addMaterial(this.form).then(response => {
-              if (response.code === 200) {
-                this.msgSuccess('新增成功')
-                this.open = false
-                this.getList()
-              } else {
-                this.msgError(response.msg || '新增失败')
-              }
-            }).catch(error => {
-              this.msgError(error.msg || '网络错误，请稍后重试')
+              this.$modal.msgSuccess('新增成功')
+              this.open = false
+              this.getList()
             })
           }
         }
@@ -295,24 +280,12 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const materialIds = row.materialId || this.multipleSelection.map(item => item.materialId)
-      this.$confirm(`是否确认删除原料信息?`, "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(() => {
+      this.$modal.confirm('是否确认删除原料信息?').then(() => {
         return delMaterial(materialIds)
-      }).then(response => {
-        if (response.code === 200) {
-          this.msgSuccess('删除成功')
-          this.getList()
-        } else {
-          this.msgError(response.msg || '删除失败')
-        }
-      }).catch(error => {
-        if (error !== 'cancel') {
-          this.msgError(error.msg || '网络错误，请稍后重试')
-        }
-      })
+      }).then(() => {
+        this.$modal.msgSuccess('删除成功')
+        this.getList()
+      }).catch(() => {})
     },
     /** 导出按钮操作 */
     handleExport() {
